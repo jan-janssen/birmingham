@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>First steps through pyiron &#8212; DFT Lecture</title>
+    <title>Molecular Dynamics &#8212; DFT Lecture</title>
   
   
   
@@ -62,7 +62,6 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '4-molecular-dynamics';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction to pyiron for LAMMPS users" href="5-brownian-motion.html" />
     <link rel="prev" title="Energy Volume Curve" href="3-ev-curve.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -179,16 +178,7 @@
 <li class="toctree-l1"><a class="reference internal" href="1-electronic-convergence.html">Electronic Convergence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="2-dft-energy-precision.html">Planewave Energy Cut-off and Kpoint Mesh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3-ev-curve.html">Energy Volume Curve</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">First steps through pyiron</a></li>
-<li class="toctree-l1"><a class="reference internal" href="5-brownian-motion.html">Introduction to pyiron for LAMMPS users</a></li>
-
-
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="6-diffusion.html">Exercise 1: Introduction to pyiron</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Molecular Dynamics</a></li>
 </ul>
 
     </div>
@@ -358,7 +348,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>First steps through pyiron</h1>
+    <h1>Molecular Dynamics</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -368,10 +358,12 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-lammps-md-simulation">Perform a LAMMPS MD simulation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analyze-the-calculation">Analyze the calculation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-series-of-jobs">Perform a series of jobs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-series-of-projects">Create a series of projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-volume-curve">Energy Volume Curve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#molecular-dynamics-simulation">Molecular Dynamics Simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thermal-expansion">Thermal Expansion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-interatomic-potentials">Compare Interatomic Potentials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
             </nav>
         </div>
@@ -383,41 +375,285 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="first-steps-through-pyiron">
-<h1>First steps through pyiron<a class="headerlink" href="#first-steps-through-pyiron" title="Link to this heading">#</a></h1>
-<p>This section gives a brief introduction about fundamental concepts of pyiron and how they can be used to setup, run and analyze atomic simulations. As a first step we import the libraries <a class="reference external" href="http://www.numpy.org/">numpy</a> for data analysis and <a class="reference external" href="https://matplotlib.org/">matplotlib</a> for visualization.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="molecular-dynamics">
+<h1>Molecular Dynamics<a class="headerlink" href="#molecular-dynamics" title="Link to this heading">#</a></h1>
+<p>In this fourth tutorial we are shifting gears, moving beyond DFT calculation towards classical interatomic potentials. We use the Large-scale Atomic/Molecular Massively Parallel Simulator (LAMMPS) which supports a number of classical interatomic potentials and modern machine-learned interatomic potentials. For the purpose of this tutorial we focus on classical interatomic potentials based on their computational efficiency.</p>
+<p>In analogy to the previous exercies both codes are available as open-source software for the Linux operation system and can be installed from the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package manager using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">pyiron_atomistics</span> <span class="n">lammps</span> <span class="n">iprpy</span><span class="o">-</span><span class="n">data</span> <span class="n">pyiron</span><span class="o">-</span><span class="n">data</span> <span class="n">nglview</span>
+</pre></div>
+</div>
+<p>This command installs both packages, the required resources including the pseudo potentials and the <code class="docutils literal notranslate"><span class="pre">nglview</span></code> package to visualise atomistic structures in the jupyter environment.</p>
+<p>In addition, to the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object from <code class="docutils literal notranslate"><span class="pre">pyiron_atomistics</span></code> also the numerical library <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and the visualization library <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> are imported. The <code class="docutils literal notranslate"><span class="pre">Project</span></code> object behaves like a folder on the file system and adds the capability to create other <code class="docutils literal notranslate"><span class="pre">pyiron</span></code> objects like atomistic structures and simulation jobs.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiron_atomistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "dd5ba454f1244435b848b56288123937"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/srv/conda/envs/notebook/lib/python3.12/site-packages/nglview/__init__.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
+  import pkg_resources
+</pre></div>
+</div>
+</div>
+</div>
+<section id="energy-volume-curve">
+<h2>Energy Volume Curve<a class="headerlink" href="#energy-volume-curve" title="Link to this heading">#</a></h2>
+<p>As a first step for working with interatomic potentials, we demonstrate the advantage of the generic interface the pyiron workflow framework provides. Meaning we can copy and paste the workflow developed in the previous tutorial to calculate the energy volume curve with DFT and apply it for the interatomic potential calculation.</p>
+<p>A new <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is created named <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_md</span></code> to separate the calculation from the current tutorial and the previous. Any remaining calculation in the <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_md</span></code> folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function, to provide a fresh start for every execution of the notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;energy_volume_curve_md&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="o">.</span><span class="n">remove_jobs</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "a4e311d2b9cc450dafe8026644e06e0b"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-11-22 20:59:10,423 - pyiron_log - WARNING - Could not remove job with ID 132 
+2025-11-22 20:59:10,424 - pyiron_log - WARNING - Could not remove job with ID 133 
+2025-11-22 20:59:10,425 - pyiron_log - WARNING - Could not remove job with ID 134 
+2025-11-22 20:59:10,425 - pyiron_log - WARNING - Could not remove job with ID 135 
+2025-11-22 20:59:10,426 - pyiron_log - WARNING - Could not remove job with ID 136 
+2025-11-22 20:59:10,427 - pyiron_log - WARNING - Could not remove job with ID 137 
+2025-11-22 20:59:10,427 - pyiron_log - WARNING - Could not remove job with ID 138 
+2025-11-22 20:59:10,428 - pyiron_log - WARNING - Could not remove job with ID 139 
+2025-11-22 20:59:10,429 - pyiron_log - WARNING - Could not remove job with ID 140 
+2025-11-22 20:59:10,430 - pyiron_log - WARNING - Could not remove job with ID 141 
+2025-11-22 20:59:10,431 - pyiron_log - WARNING - Could not remove job with ID 142 
+</pre></div>
+</div>
+</div>
+</div>
+<p>An Aluminium bulk structure is created in analogy to the previous tutorial. As the classical interatomic potentials are fitted to reproduce experimental materials properties, there is no need to adjust the lattice constant, which simplifies the creation of the bulk structure:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">structure_Al</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">ase</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For the interatomic potential calculation it is not required to specify the plane wave energy cut-off or kpoint mesh, so we can remove the corresponding for-loop from the previous example. Instead we have to select an interatomic potential which supports the chemical elements required for the given simulation, in this case Aluminium. If no interatomic potential is provided pyiron automatically selects an interatomic potential from the <a class="reference external" href="https://www.ctcms.nist.gov/potentials/">NIST database of interatomic potentials</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_Al</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">Lammps</span><span class="p">(</span><span class="s2">&quot;lmp&quot;</span><span class="p">)</span>
+<span class="n">job_Al</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure_Al</span>
+<span class="n">job_Al</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="s2">&quot;1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1&quot;</span>
+<span class="n">job_Al</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">cores</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also list the available interatomic potentials for a given atomistic structure using the <code class="docutils literal notranslate"><span class="pre">list_potentials()</span></code> function of pyiron or alternatively us the <code class="docutils literal notranslate"><span class="pre">view_potentials()</span></code> function to receive a pandas Dataframe representation of all the available potentials, to select one. Again these potentials are provided from the <a class="reference external" href="https://www.ctcms.nist.gov/potentials/">NIST database of interatomic potentials</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># job_Al.list_potentials()</span>
+<span class="n">job_Al</span><span class="o">.</span><span class="n">view_potentials</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pylab</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-</pre></div>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Config</th>
+      <th>Filename</th>
+      <th>Model</th>
+      <th>Name</th>
+      <th>Species</th>
+      <th>Citations</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>39</th>
+      <td>[pair_style eam/alloy\n, pair_coeff * * NiAlH_jea.eam.alloy Ni Al H\n]</td>
+      <td>[potential_LAMMPS/1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1/NiAlH_jea.eam.alloy]</td>
+      <td>NISTiprpy</td>
+      <td>1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1</td>
+      <td>[Ni, Al, H]</td>
+      <td>[{'Angelo_1995': {'title': 'Trapping of hydrogen to lattice defects in nickel', 'journal': 'Modelling and Simulation in Materials Science and Engineering', 'volume': '3', 'pages': '289--307', 'num...</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>[pair_style eam/alloy\n, pair_coeff * * Farkas_Nb-Ti-Al_1996.eam.alloy Nb Ti Al\n]</td>
+      <td>[potential_LAMMPS/1996--Farkas-D--Nb-Ti-Al--LAMMPS--ipr1/Farkas_Nb-Ti-Al_1996.eam.alloy]</td>
+      <td>NISTiprpy</td>
+      <td>1996--Farkas-D--Nb-Ti-Al--LAMMPS--ipr1</td>
+      <td>[Nb, Ti, Al]</td>
+      <td>[{'Farkas_1996': {'title': 'Interatomic potentials for ternary Nb - Ti - Al alloys', 'journal': 'Modelling and Simulation in Materials Science and Engineering', 'volume': '4', 'pages': '23--32', '...</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>[pair_style eam/alloy\n, pair_coeff * * mg-al-set.eam.alloy Al Mg\n]</td>
+      <td>[potential_LAMMPS/1997--Liu-X-Y--Al-Mg--LAMMPS--ipr1/mg-al-set.eam.alloy]</td>
+      <td>NISTiprpy</td>
+      <td>1997--Liu-X-Y--Al-Mg--LAMMPS--ipr1</td>
+      <td>[Al, Mg]</td>
+      <td>[{'Liu_1997': {'title': 'Anisotropic surface segregation in Al-Mg alloys', 'journal': 'Surface Science', 'volume': '373', 'pages': '357--370', 'number': '2-3', 'doi': '10.1016/s0039-6028(96)01154-...</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>[pair_style eam/alloy\n, pair_coeff * * almg.liu.eam.alloy Al Mg\n]</td>
+      <td>[potential_LAMMPS/1998--Liu-X-Y--Al-Mg--LAMMPS--ipr1/almg.liu.eam.alloy]</td>
+      <td>NISTiprpy</td>
+      <td>1998--Liu-X-Y--Al-Mg--LAMMPS--ipr1</td>
+      <td>[Al, Mg]</td>
+      <td>[{'Liu_1998': {'title': 'Grain-boundary segregation in Al-10%Mg alloys at hot working temperatures', 'journal': 'Acta Materialia', 'volume': '46', 'pages': '3467--3476', 'number': '10', 'doi': '10...</td>
+    </tr>
+    <tr>
+      <th>48</th>
+      <td>[pair_style eam/alloy\n, pair_coeff * * al-cu-set.eam.alloy Al Cu\n]</td>
+      <td>[potential_LAMMPS/1999--Liu-X-Y--Al-Cu--LAMMPS--ipr1/al-cu-set.eam.alloy]</td>
+      <td>NISTiprpy</td>
+      <td>1999--Liu-X-Y--Al-Cu--LAMMPS--ipr1</td>
+      <td>[Al, Cu]</td>
+      <td>[{'Liu_1999': {'title': "A new investigation of copper's role in enhancing Al-Cu interconnect electromigration resistance from an atomistic view", 'journal': 'Acta Materialia', 'volume': '47', 'pa...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>948</th>
+      <td>[pair_style kim Sim_LAMMPS_MEAM_JelinekGrohHorstemeyer_2012_AlSiMgCuFe__SM_656517352485_000\n, pair_coeff * * Al Si Mg Cu Fe\n]</td>
+      <td>[]</td>
+      <td>OPENKIM</td>
+      <td>Sim_LAMMPS_MEAM_JelinekGrohHorstemeyer_2012_AlSiMgCuFe__SM_656517352485_000</td>
+      <td>[Al, Si, Mg, Cu, Fe]</td>
+      <td>[{'B._2012': {'title': 'Modified embedded atom method potential for Al, Si, Mg, Cu, and Fe alloys', 'volume': '85', 'year': '2012', 'journal': 'Physical Review B', 'doi': '10.1103/PhysRevB.85.2451...</td>
+    </tr>
+    <tr>
+      <th>958</th>
+      <td>[pair_style kim Sim_LAMMPS_MEAM_PascuetFernandez_2015_AlU__SM_721930391003_000\n, pair_coeff * * Al U\n]</td>
+      <td>[]</td>
+      <td>OPENKIM</td>
+      <td>Sim_LAMMPS_MEAM_PascuetFernandez_2015_AlU__SM_721930391003_000</td>
+      <td>[Al, U]</td>
+      <td>[{'M.I._2015': {'title': '{A}tomic interaction of the {MEAM} type for the study of intermetallics in the {A}l–{U} alloy', 'volume': '467', 'year': '2015', 'journal': 'Journal of Nuclear Materials'...</td>
+    </tr>
+    <tr>
+      <th>959</th>
+      <td>[pair_style kim Sim_LAMMPS_MEAM_PascuetFernandez_2015_Al__SM_811588957187_000\n, pair_coeff * * Al\n]</td>
+      <td>[]</td>
+      <td>OPENKIM</td>
+      <td>Sim_LAMMPS_MEAM_PascuetFernandez_2015_Al__SM_811588957187_000</td>
+      <td>[Al]</td>
+      <td>[{'M.I._2015': {'title': '{A}tomic interaction of the {MEAM} type for the study of intermetallics in the {A}l–{U} alloy', 'volume': '467', 'year': '2015', 'journal': 'Journal of Nuclear Materials'...</td>
+    </tr>
+    <tr>
+      <th>979</th>
+      <td>[pair_style kim Sim_LAMMPS_SMTBQ_SallesPolitanoAmzallag_2016_AlO__SM_853967355976_000\n, pair_coeff * * Al O\n]</td>
+      <td>[]</td>
+      <td>OPENKIM</td>
+      <td>Sim_LAMMPS_SMTBQ_SallesPolitanoAmzallag_2016_AlO__SM_853967355976_000</td>
+      <td>[Al, O]</td>
+      <td>[{'N._2016': {'title': 'Molecular dynamics study of high-pressure alumina polymorphs with a tight-binding variable-charge model', 'volume': '111', 'year': '2016', 'journal': 'Computational Materia...</td>
+    </tr>
+    <tr>
+      <th>980</th>
+      <td>[pair_style kim Sim_LAMMPS_SMTBQ_SallesPolitanoAmzallag_2016_Al__SM_404097633924_000\n, pair_coeff * * Al\n]</td>
+      <td>[]</td>
+      <td>OPENKIM</td>
+      <td>Sim_LAMMPS_SMTBQ_SallesPolitanoAmzallag_2016_Al__SM_404097633924_000</td>
+      <td>[Al]</td>
+      <td>[{'N._2016': {'title': 'Molecular dynamics study of high-pressure alumina polymorphs with a tight-binding variable-charge model', 'volume': '111', 'year': '2016', 'journal': 'Computational Materia...</td>
+    </tr>
+  </tbody>
+</table>
+<p>136 rows × 6 columns</p>
+</div></div></div>
 </div>
-</div>
-</div>
-<p>To import pyiron simply use:</p>
+<p>Once an interatomic potential is selected the calculation of the energy volume curve can again be done with the <code class="docutils literal notranslate"><span class="pre">Murnaghan</span></code> GenericMaster job as introduced in the previous tutorial, by assining the LAMMPS calculation job as reference job <code class="docutils literal notranslate"><span class="pre">ref_job</span></code>. The <code class="docutils literal notranslate"><span class="pre">Murnaghan</span></code> GenericMaster job is then executed by calling the <code class="docutils literal notranslate"><span class="pre">run()</span></code> function.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiron_atomistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">murn</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">Murnaghan</span><span class="p">(</span><span class="s2">&quot;murn_lmp&quot;</span><span class="p">)</span>
+<span class="n">murn</span><span class="o">.</span><span class="n">ref_job</span> <span class="o">=</span> <span class="n">job_Al</span>
+<span class="n">murn</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The job murn_lmp was saved and received the ID: 148
+The job murn_lmp_0_9 was saved and received the ID: 149
+The job murn_lmp_0_92 was saved and received the ID: 150
+The job murn_lmp_0_94 was saved and received the ID: 151
+The job murn_lmp_0_96 was saved and received the ID: 152
+The job murn_lmp_0_98 was saved and received the ID: 153
+The job murn_lmp_1_0 was saved and received the ID: 154
+The job murn_lmp_1_02 was saved and received the ID: 155
+The job murn_lmp_1_04 was saved and received the ID: 156
+The job murn_lmp_1_06 was saved and received the ID: 157
+The job murn_lmp_1_08 was saved and received the ID: 158
+The job murn_lmp_1_1 was saved and received the ID: 159
 </pre></div>
 </div>
 </div>
 </div>
-<p>The Project object introduced below is central in pyiron. It allows to name the project as well as to derive all other objects such as structures, jobs etc. without having to import them. Thus, by code completion <em>Tab</em> the respective commands can be found easily.</p>
-<p>We now create a pyiron Project named ‘first_steps’.</p>
+<p>For visualisation of the energy volume curve the built-in plotting routine of the <code class="docutils literal notranslate"><span class="pre">Murnaghan</span></code> GenericMaster job is used:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;first_steps&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">murn</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/2d30e9f4eba51fdf2b9f8e490e8a7c0928cc77b5e34c4bc068cad04b406f0ce5.png" src="_images/2d30e9f4eba51fdf2b9f8e490e8a7c0928cc77b5e34c4bc068cad04b406f0ce5.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Murnaghan: error: 7.160122989877648e-09&#39;}, xlabel=&#39;Volume ($\\AA^3$)&#39;, ylabel=&#39;energy (eV)&#39;&gt;
 </pre></div>
 </div>
 </div>
 </div>
-<p>The project name also applies for the directory that is created for the project.</p>
-<section id="perform-a-lammps-md-simulation">
-<h2>Perform a LAMMPS MD simulation<a class="headerlink" href="#perform-a-lammps-md-simulation" title="Link to this heading">#</a></h2>
-<p>Having created an instance of the pyiron Project we now perform a <a class="reference external" href="http://lammps.sandia.gov/">LAMMPS</a> molecular dynamics simulation.</p>
-<p>For this basic simulation example we construct an fcc Al crystal in a cubic supercell (<code class="docutils literal notranslate"><span class="pre">cubic=True</span></code>). For more details on generating structures, please have a look at our <a class="reference internal" href="#./structures.ipynb"><span class="xref myst">structures example</span></a></p>
+<p>In addition to the visualization of the energy volume curve, we can also leverage it to determine the equilibrium materials parameters, namely the equilibrium volume or lattice constant and the equilibrium bulk modulus. As we used the a primitive unit cell to improve the computational efficiency of our calculation, we have to multiply the calculated volume by the number of atoms in a regular unit cell - for face center cubic this is four <code class="docutils literal notranslate"><span class="pre">4</span></code> before taking the cubic square root:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">murn</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;output/equilibrium_volume&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">),</span> <span class="n">murn</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;output/equilibrium_bulk_modulus&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4.049953713580801, 81.04044545830683)
+</pre></div>
+</div>
+</div>
+</div>
+<p>A lattice constant of <code class="docutils literal notranslate"><span class="pre">4.05</span></code> Angstrom and a bulk modulus of <code class="docutils literal notranslate"><span class="pre">81</span></code> GPa are in good agreement with experimental measurements for example webelements gives the lattice constant as <code class="docutils literal notranslate"><span class="pre">4.05</span></code> Angstrom <a class="reference external" href="https://www.webelements.com/aluminium/crystal_structure.html">1</a> and the bulk modulus as <code class="docutils literal notranslate"><span class="pre">76</span></code> GPa <a class="reference external" href="https://www.webelements.com/aluminium/physics.html">2</a>.</p>
+</section>
+<section id="molecular-dynamics-simulation">
+<h2>Molecular Dynamics Simulation<a class="headerlink" href="#molecular-dynamics-simulation" title="Link to this heading">#</a></h2>
+<p>So minimize any confusion, we create a new project for the molecular dynamics calculation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;molecular_dynamics&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="o">.</span><span class="n">remove_jobs</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "912ac4ab6c3a4691ba392753aa9f06f4"}</script></div>
+</div>
+<p>For the molecular dynamics simulation example we construct an fcc Al crystal in a cubic supercell (<code class="docutils literal notranslate"><span class="pre">cubic=True</span></code>). We further repeat the supercell using the <code class="docutils literal notranslate"><span class="pre">repeat()</span></code> function three times in all three directions resulting in a total of 108 atoms. This larger simulation cell increases the statistical sampling. Finally, we plot the structure using <a class="reference external" href="http://nglviewer.org/nglview/latest/api.html">NGlview</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">basis</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">ase</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="n">cubic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -427,13 +663,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1296530f94ae4dbb834f32e2150d93bb", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "50761b0d7eb243539f6517cc4259c9a6"}</script></div>
 </div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">create_ase_bulk</span></code> uses the <a class="reference external" href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html">ASE bulk module</a>. The structure can be modified - here we extend the original cell to a 3x3x3 supercell (<code class="docutils literal notranslate"><span class="pre">repeat([3,</span> <span class="pre">3,</span> <span class="pre">3]</span></code>). Finally, we plot the structure using <a class="reference external" href="http://nglviewer.org/nglview/latest/api.html">NGlview</a>.</p>
 <p>The project object allows to create various simulation job types. Here, we create a LAMMPS job.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">job_type</span><span class="o">=</span><span class="n">pr</span><span class="o">.</span><span class="n">job_type</span><span class="o">.</span><span class="n">Lammps</span><span class="p">,</span> <span class="n">job_name</span><span class="o">=</span><span class="s2">&quot;Al_T800K&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">Lammps</span><span class="p">(</span><span class="s2">&quot;Al_T400K&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -442,35 +677,15 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">supercell_3x3x3</span>
-<span class="n">job</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">job</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>To see all available interatomic potentials which are compatible with the structure (for our example they must contain Al) and the job type (here LAMMPS) we call <code class="docutils literal notranslate"><span class="pre">job.list_potentials()</span></code>.</p>
+<p>In analogy to the previous example of calculating the energy volume curve above, also for this example we select and Aluminium interatomic potential:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">list_potentials</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Al_Mg_Mendelev_eam&#39;, &#39;Zope_Ti_Al_2003_eam&#39;, &#39;Al_H_Ni_Angelo_eam&#39;]
-</pre></div>
-</div>
-</div>
-</div>
-<p>From the above let us select the first potential in the list.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pot</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">list_potentials</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected potential: &quot;</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
-<span class="n">job</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">pot</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Selected potential:  Al_Mg_Mendelev_eam
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="s2">&quot;1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -482,20 +697,22 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The job Al_T400K was saved and received the ID: 160
+</pre></div>
 </div>
-</section>
-<section id="analyze-the-calculation">
-<h2>Analyze the calculation<a class="headerlink" href="#analyze-the-calculation" title="Link to this heading">#</a></h2>
+</div>
+</div>
 <p>After the simulation has finished the information about the job can be accessed through the Project object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="p">[</span><span class="s2">&quot;Al_T800K&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="p">[</span><span class="s2">&quot;Al_T400K&quot;</span><span class="p">]</span>
 <span class="n">job</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;groups&#39;: [&#39;input&#39;, &#39;output&#39;], &#39;nodes&#39;: [&#39;NAME&#39;, &#39;server&#39;, &#39;VERSION&#39;, &#39;TYPE&#39;]}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;groups&#39;: [&#39;input&#39;, &#39;output&#39;], &#39;nodes&#39;: [&#39;DICT_VERSION&#39;, &#39;HDF_VERSION&#39;, &#39;NAME&#39;, &#39;OBJECT&#39;, &#39;TYPE&#39;, &#39;VERSION&#39;, &#39;executable&#39;, &#39;job_id&#39;, &#39;server&#39;, &#39;status&#39;]}
 </pre></div>
 </div>
 </div>
@@ -503,25 +720,25 @@ document.write(`
 <p>Printing the job object (note that in Jupyter we don’t have to call a print statement if the variable/object is in the last line). The output lists the variables (nodes) and the directories (groups). To get a list of all variables stored in the generic output we type:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="p">[</span><span class="s2">&quot;output/generic&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;output/generic&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;groups&#39;: [], &#39;nodes&#39;: [&#39;temperatures&#39;, &#39;positions&#39;, &#39;steps&#39;, &#39;forces&#39;, &#39;energy_pot&#39;, &#39;energy_tot&#39;, &#39;volume&#39;, &#39;cells&#39;, &#39;pressures&#39;, &#39;unwrapped_positions&#39;, &#39;time&#39;]}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;groups&#39;: [], &#39;nodes&#39;: [&#39;cells&#39;, &#39;energy_pot&#39;, &#39;energy_tot&#39;, &#39;forces&#39;, &#39;indices&#39;, &#39;natoms&#39;, &#39;positions&#39;, &#39;pressures&#39;, &#39;steps&#39;, &#39;temperature&#39;, &#39;unwrapped_positions&#39;, &#39;velocities&#39;, &#39;volume&#39;]}
 </pre></div>
 </div>
 </div>
 </div>
-<p>An animated 3d plot of the MD trajectories is created by:</p>
+<p>An animated 3d plot of the MD trajectories is created with the <code class="docutils literal notranslate"><span class="pre">animate_structures()</span></code> function.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">animate_structure</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">animate_structures</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8b809c517e50423f81fb574ebd6eb06f", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b455430c62b142919b5f16317069d24e"}</script></div>
 </div>
 <p>To analyze the temperature evolution we plot it as function of the MD step.</p>
 <div class="cell docutils container">
@@ -535,39 +752,58 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/3b8903ee28e59625eb10ae73878260d614d896d78b9c0f20155087f46035c353.png" src="_images/3b8903ee28e59625eb10ae73878260d614d896d78b9c0f20155087f46035c353.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_3629/3950441473.py:1: DeprecationWarning: pyiron_base.jobs.job.base.__getitem__ is deprecated: Use job.output for results, job.files to access files; job.content to access HDF storage and job.child_project to access children of master jobs..
+  temperatures = job[&quot;output/generic/temperature&quot;]
+/tmp/ipykernel_3629/3950441473.py:2: DeprecationWarning: pyiron_base.jobs.job.base.__getitem__ is deprecated: Use job.output for results, job.files to access files; job.content to access HDF storage and job.child_project to access children of master jobs..
+  steps = job[&quot;output/generic/steps&quot;]
+</pre></div>
+</div>
+<img alt="_images/708450db9ea99dd64691232522f92f72c26855ed13a32ca78899a8cc80da5ce0.png" src="_images/708450db9ea99dd64691232522f92f72c26855ed13a32ca78899a8cc80da5ce0.png" />
 </div>
 </div>
-<p>In the same way we can plot the trajectories.</p>
+<p>In the same way we can plot the trajectories in a 2D projection. This is helpful to identify if the atoms remain on their original lattice positions or if they started to diffuse or melt. In this case the sample remains solid as the individual atoms remain on their lattice positions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s2">&quot;output/generic/positions&quot;</span><span class="p">]</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-<span class="n">sel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.1</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">axs</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">sel</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">sel</span><span class="p">])</span>
-<span class="n">axs</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [$\AA$]&quot;</span><span class="p">)</span>
-<span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [$\AA$]&quot;</span><span class="p">)</span>
-<span class="n">axs</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">job</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x [$\AA$]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y [$\AA$]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/579e6e5ef4a547a498f199b155625ea67b57ff96eaf1f2bbb3793baa268649f4.png" src="_images/579e6e5ef4a547a498f199b155625ea67b57ff96eaf1f2bbb3793baa268649f4.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:2: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:2: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+/tmp/ipykernel_3629/728902178.py:2: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.xlabel(&#39;x [$\AA$]&#39;)
+/tmp/ipykernel_3629/728902178.py:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.ylabel(&#39;y [$\AA$]&#39;)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y [$\\AA$]&#39;)
+</pre></div>
+</div>
+<img alt="_images/f9ff7a96b4446ddf5fea2bde79feeddd0ded42335792a218e4fa9f2d1796abd4.png" src="_images/f9ff7a96b4446ddf5fea2bde79feeddd0ded42335792a218e4fa9f2d1796abd4.png" />
 </div>
 </div>
 </section>
-<section id="perform-a-series-of-jobs">
-<h2>Perform a series of jobs<a class="headerlink" href="#perform-a-series-of-jobs" title="Link to this heading">#</a></h2>
+<section id="thermal-expansion">
+<h2>Thermal Expansion<a class="headerlink" href="#thermal-expansion" title="Link to this heading">#</a></h2>
 <p>To run the MD simulation for various temperatures we can simply loop over the desired temperature values.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">temperature</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">200</span><span class="p">):</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">pr</span><span class="o">.</span><span class="n">job_type</span><span class="o">.</span><span class="n">Lammps</span><span class="p">,</span> <span class="s2">&quot;Al_T</span><span class="si">{}</span><span class="s2">K&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)))</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">Lammps</span><span class="p">(</span><span class="s2">&quot;Al_T</span><span class="si">{}</span><span class="s2">K&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)))</span>
     <span class="n">job</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">supercell_3x3x3</span>
-    <span class="n">job</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">pot</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="s2">&quot;1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1&quot;</span>
     <span class="n">job</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
     <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The job Al_T200K was saved and received the ID: 161
 </pre></div>
 </div>
 </div>
@@ -579,19 +815,14 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Al_T600K&#39;, &#39;Al_T800K&#39;, &#39;Al_T1000K&#39;, &#39;Al_T200K&#39;, &#39;Al_T400K&#39;]
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can now iterate over the jobs and extract volume and mean temperature.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vol_lst</span><span class="p">,</span> <span class="n">temp_lst</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">pr</span><span class="o">.</span><span class="n">iter_jobs</span><span class="p">(</span><span class="n">convert_to_object</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">volumes</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s2">&quot;output/generic/volume&quot;</span><span class="p">]</span>
-    <span class="n">temperatures</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s2">&quot;output/generic/temperature&quot;</span><span class="p">]</span>
+    <span class="n">volumes</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;output/generic/volume&quot;</span><span class="p">]</span>
+    <span class="n">temperatures</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;output/generic/temperature&quot;</span><span class="p">]</span>
     <span class="n">temp_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">temperatures</span><span class="p">[</span><span class="mi">20</span><span class="p">:]))</span>
     <span class="n">vol_lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">volumes</span><span class="p">[</span><span class="mi">20</span><span class="p">:]))</span>
 </pre></div>
@@ -615,30 +846,23 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/f0502b4b5dc037055b13bf2333ec970aa356176bc5a40a24a42f14e025d611e8.png" src="_images/f0502b4b5dc037055b13bf2333ec970aa356176bc5a40a24a42f14e025d611e8.png" />
-</div>
 </div>
 </section>
-<section id="create-a-series-of-projects">
-<h2>Create a series of projects<a class="headerlink" href="#create-a-series-of-projects" title="Link to this heading">#</a></h2>
+<section id="compare-interatomic-potentials">
+<h2>Compare Interatomic Potentials<a class="headerlink" href="#compare-interatomic-potentials" title="Link to this heading">#</a></h2>
 <p>We extend the previous example and compute the thermal expansion for three of the available aluminum potentials. First, let us create a new pyiron project named ‘Al_potentials’. We can use the information of the previously run job ‘Al_T200K’ of the ‘first_steps’ project to find all the compatible potentials.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;Al_potentials&quot;</span><span class="p">)</span>
-<span class="n">pot_lst</span> <span class="o">=</span> <span class="n">pr</span><span class="p">[</span><span class="s2">&quot;../first_steps/Al_T200K&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_object</span><span class="p">()</span><span class="o">.</span><span class="n">list_potentials</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;thermal_expansion&quot;</span><span class="p">)</span>
+<span class="n">pr</span><span class="o">.</span><span class="n">remove_jobs</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pot_lst</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Al_Mg_Mendelev_eam&#39;, &#39;Zope_Ti_Al_2003_eam&#39;, &#39;Al_H_Ni_Angelo_eam&#39;]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pot_lst</span> <span class="o">=</span> <span class="n">pr</span><span class="p">[</span><span class="s2">&quot;../molecular_dynamics/Al_T200K&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_object</span><span class="p">()</span><span class="o">.</span><span class="n">list_potentials</span><span class="p">()[:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">pot_lst</span>
 </pre></div>
 </div>
 </div>
@@ -651,18 +875,11 @@ document.write(`
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interatomic potential used: &quot;</span><span class="p">,</span> <span class="n">pot</span><span class="p">)</span>
     <span class="n">pr_pot</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">pot</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">temperature</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">200</span><span class="p">):</span>
-        <span class="n">job</span> <span class="o">=</span> <span class="n">pr_pot</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">pr</span><span class="o">.</span><span class="n">job_type</span><span class="o">.</span><span class="n">Lammps</span><span class="p">,</span> <span class="s2">&quot;Al_T</span><span class="si">{}</span><span class="s2">K&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)))</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">pr_pot</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">Lammps</span><span class="p">(</span><span class="s2">&quot;Al_T</span><span class="si">{}</span><span class="s2">K&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)))</span>
         <span class="n">job</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">supercell_3x3x3</span>
         <span class="n">job</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="n">pot</span>
         <span class="n">job</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
         <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Interatomic potential used:  Al_Mg_Mendelev_eam
-Interatomic potential used:  Zope_Ti_Al_2003_eam
-Interatomic potential used:  Al_H_Ni_Angelo_eam
 </pre></div>
 </div>
 </div>
@@ -688,10 +905,17 @@ Interatomic potential used:  Al_H_Ni_Angelo_eam
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/f763b7c671f43afdd97728be65ef90a05a98f863d2be8271391700061350bb10.png" src="_images/f763b7c671f43afdd97728be65ef90a05a98f863d2be8271391700061350bb10.png" />
 </div>
-</div>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>This fourth tutorial introduced classical interatomic potential simulations with the LAMMPS simulation code. It highlighted how the generic interface of the pyiron workflow framework allows reusing the same functionality originally developed for DFT simulation for interatomic potential simulation. Furthermore, the thermal expansion was calculated for three interatomic potentials. This example highlights how to iteratively construct a pyiron project, starting by the calculation of the equilibrated volume at a given temperature, followed by a first for-loop over different temperatures and finally a loop over different interatomic potentials. This iterative approach of extending simulation protocols is a key feature of the pyiron workflow framework to enable data-driven materials science.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Identify a material suitable for additive manufacturing by searching for a low thermal expansion and a high bulk modulus. For example compare the thermal expansion and bulk modulus of gold, silver and copper to aluminium and explain which of the four elements you would suggest for additive manufacturing. A similar study was recently published for high entropy alloys in <a class="reference external" href="https://doi.org/10.1016/j.actamat.2025.120908">Sk Md A.A. Alvi, et al. Acta Materialia, 289 (2025)</a>.</p></li>
+</ul>
 </section>
 </section>
 
@@ -734,15 +958,6 @@ Interatomic potential used:  Al_H_Ni_Angelo_eam
         <p class="prev-next-title">Energy Volume Curve</p>
       </div>
     </a>
-    <a class="right-next"
-       href="5-brownian-motion.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Introduction to pyiron for LAMMPS users</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -759,10 +974,12 @@ Interatomic potential used:  Al_H_Ni_Angelo_eam
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-lammps-md-simulation">Perform a LAMMPS MD simulation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analyze-the-calculation">Analyze the calculation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-series-of-jobs">Perform a series of jobs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-series-of-projects">Create a series of projects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-volume-curve">Energy Volume Curve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#molecular-dynamics-simulation">Molecular Dynamics Simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thermal-expansion">Thermal Expansion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-interatomic-potentials">Compare Interatomic Potentials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
   </nav></div>
 

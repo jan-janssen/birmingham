@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '3-ev-curve';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="First steps through pyiron" href="4-molecular-dynamics.html" />
+    <link rel="next" title="Molecular Dynamics" href="4-molecular-dynamics.html" />
     <link rel="prev" title="Planewave Energy Cut-off and Kpoint Mesh" href="2-dft-energy-precision.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -179,16 +179,7 @@
 <li class="toctree-l1"><a class="reference internal" href="1-electronic-convergence.html">Electronic Convergence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="2-dft-energy-precision.html">Planewave Energy Cut-off and Kpoint Mesh</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Energy Volume Curve</a></li>
-<li class="toctree-l1"><a class="reference internal" href="4-molecular-dynamics.html">First steps through pyiron</a></li>
-<li class="toctree-l1"><a class="reference internal" href="5-brownian-motion.html">Introduction to pyiron for LAMMPS users</a></li>
-
-
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="6-diffusion.html">Exercise 1: Introduction to pyiron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4-molecular-dynamics.html">Molecular Dynamics</a></li>
 </ul>
 
     </div>
@@ -371,6 +362,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
             </nav>
         </div>
@@ -385,7 +377,7 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="energy-volume-curve">
 <h1>Energy Volume Curve<a class="headerlink" href="#energy-volume-curve" title="Link to this heading">#</a></h1>
 <p>While the total energies calculated with DFT are not very useful, the energy differences calculated from these total energies can be applied to calculate a number of material properties. One common example is the calculation of the bulk modulus as the second derivative of the change of energy with volume.</p>
-<p>Following the first two tutorials the <a class="reference external" href="https://sxrepo.mpie.de">SPHInX</a> DFT code is used in combination with <a class="reference external" href="https://pyiron.org">pyiron.org</a> workflow framework. The installation of these software packages is explained in the first tutorial. In analogy to the first two tutorials, also the third tutorial starts by importing the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object in addition to <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code>.</p>
+<p>Following the first two tutorials the <a class="reference external" href="https://sxrepo.mpie.de">SPHInX</a> DFT simulation code is used in combination with the <a class="reference external" href="https://pyiron.org">pyiron.org</a> workflow framework. The installation of these software packages is explained in the first tutorial. In analogy to the first two tutorials, also the third tutorial starts by importing the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object in addition to <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -395,21 +387,25 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "02c9c0953c2347c184e6452696e84fad"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "72781063333c4d99aedfd1fd0017548e"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/srv/conda/envs/notebook/lib/python3.12/site-packages/nglview/__init__.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
+  import pkg_resources
+</pre></div>
+</div>
+</div>
 </div>
 <section id="calculation">
 <h2>Calculation<a class="headerlink" href="#calculation" title="Link to this heading">#</a></h2>
 <p>In addition, to interfaces to different simulation codes pyiron also includes <code class="docutils literal notranslate"><span class="pre">GenericMaster</span></code> jobs which run multiple individual calculation in one job. This is similar to the for-loops used in the previous tutorial. For calculating the energy volume curve users can either write their own for-loop or alternatively they can use the <code class="docutils literal notranslate"><span class="pre">Murnaghan</span></code> job type. Especially when nesting multiple for-loops these <code class="docutils literal notranslate"><span class="pre">GenericMaster</span></code> jobs can simplify the workflow.</p>
-<p>A new <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is created named <code class="docutils literal notranslate"><span class="pre">murn_conv</span></code> to separate the calculation from the current tutorial and the previous. Any remaining calculation in the <code class="docutils literal notranslate"><span class="pre">murn_conv</span></code> folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function, to provide a fresh start for every execution of the notebook.</p>
+<p>A new <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is created named <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_convergence</span></code> to separate the calculation from the current tutorial and the previous. Any remaining calculation in the <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_convergence</span></code> folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function, to provide a fresh start for every execution of the notebook.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;murn_conv&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;energy_volume_curve_convergence&quot;</span><span class="p">)</span>
 <span class="n">pr</span><span class="o">.</span><span class="n">remove_jobs</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "83625fc384004f82869bb416e051535b"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "a12bb372396347109aab888ed9b51d34"}</script></div>
 </div>
 <p>Based on a previous iteraction of this tutorial, it is recommended to adjust the lattice constant for Aluminium from the experimental suggestion of <code class="docutils literal notranslate"><span class="pre">a=4.04</span></code> to <code class="docutils literal notranslate"><span class="pre">a=4.09</span></code>. This can depend on the choice of pseudo potential resulting in an overall difference between the prediction from DFT and the measurements from experiment.</p>
 <div class="cell docutils container">
@@ -532,10 +528,16 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+/tmp/ipykernel_1227/2394324513.py:3: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.ylabel(&quot;Equilibrium Volume ($\AA^3$)&quot;)
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Equilibrium Volume ($\\AA^3$)&#39;)
 </pre></div>
 </div>
-<img alt="_images/1481678e423327f1f9fe054b098d4880e21ff6626b94b3854413ad74fc2f3331.png" src="_images/1481678e423327f1f9fe054b098d4880e21ff6626b94b3854413ad74fc2f3331.png" />
+<img alt="_images/402144ba3f9c1f21878491b5e0531f420a2af4cddc98df61101b72e209cb87b9.png" src="_images/402144ba3f9c1f21878491b5e0531f420a2af4cddc98df61101b72e209cb87b9.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -550,7 +552,7 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Equilibrium Bulk Modulus (GPa)&#39;)
 </pre></div>
 </div>
-<img alt="_images/38f926690c32899869537fa10124c531f8e792b8983bd6b9d5f664a7af76a58c.png" src="_images/38f926690c32899869537fa10124c531f8e792b8983bd6b9d5f664a7af76a58c.png" />
+<img alt="_images/485e891dce0668b31eb7c9a5c77741aeb6bb8d6bca096a6970fd3669cdf774bf.png" src="_images/485e891dce0668b31eb7c9a5c77741aeb6bb8d6bca096a6970fd3669cdf774bf.png" />
 </div>
 </div>
 <p>While the equilibrium Volume decreases with increasing energy cutoff the bulk modulus increases with increasing energy cutoff. From these results the question arises how these results are related to the energy convergence at the different volumes, following the general notion that relative energies in DFT calculation converge faster than total energies. As a first step of this analyis the individual energy volume curves are plotted by fitting the corresponding energy volume curves.</p>
@@ -570,10 +572,16 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:9: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:9: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+/tmp/ipykernel_1227/2432637635.py:9: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.xlabel(&quot;Volume ($\AA^3$)&quot;)
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Energy (eV)&#39;)
 </pre></div>
 </div>
-<img alt="_images/68153e0fedb3d901516f2751581da73be5e5723f8b4afd0951e99045d77999db.png" src="_images/68153e0fedb3d901516f2751581da73be5e5723f8b4afd0951e99045d77999db.png" />
+<img alt="_images/12f147960862081ed11861cd62e0d891848a55e2735a4c95a27d44ed35e4902d.png" src="_images/12f147960862081ed11861cd62e0d891848a55e2735a4c95a27d44ed35e4902d.png" />
 </div>
 </div>
 <p>When subtracting the fit from the calculated energy volume pairs we find that the energy is scattered around the fit. The gaussian distribution of the energy is expected based on the choice of least square fit. Still when carefully resolving the difference between to very close volumes jumps can be found related to the jumps from adding new plane waves. Nevertheless these effects are in the order of less than 1meV.</p>
@@ -591,16 +599,34 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:7: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:8: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+&lt;&gt;:7: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:8: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+/tmp/ipykernel_1227/4187569174.py:7: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.xlabel(&quot;Volume ($\AA^3$)&quot;)
+/tmp/ipykernel_1227/4187569174.py:8: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+  plt.ylabel(&quot;$\Delta$ Energy (meV)&quot;)
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;$\\Delta$ Energy (meV)&#39;)
 </pre></div>
 </div>
-<img alt="_images/5360a85ecd7512be520940f288928baaa71edae705b89dac2c5452014e8670a4.png" src="_images/5360a85ecd7512be520940f288928baaa71edae705b89dac2c5452014e8670a4.png" />
+<img alt="_images/9ac458fb6407dbd90c2fb8b3e9fc5147a894e192f2f5e0d874269e41908435fd.png" src="_images/9ac458fb6407dbd90c2fb8b3e9fc5147a894e192f2f5e0d874269e41908435fd.png" />
 </div>
 </div>
 </section>
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
 <p>The convergence of total energies alone is insufficient, rather for any property calculated from a DFT calculation a separate convergence test is required. The convergence for the equilibrium bulk modulus and the equilibrium volume are just two examples.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>In analogy to the two previous exercises you can compare the convergence of different elements for the bulk modulus and equilibrium volume.</p></li>
+<li><p>Furthermore, you can analyse the dependence of the plane wave energy cut-off convergence and the kpoint mesh convergence? How does the convergence of the plane wave energy cut-off change when you increase the kpoint mesh or how does the kpoint mesh convergence change when you increase the plane wave energy cut-off?</p></li>
+<li><p>Finally, how does the computational cost change with increasing convergence parameters? The computational cost is available in the job table <code class="docutils literal notranslate"><span class="pre">pr.job_table()</span></code> in the column <code class="docutils literal notranslate"><span class="pre">totalcputime</span></code>. While symmetry reduces the total number of kpoints which are evaluated, you can access the calculated kpoints for a given job with <code class="docutils literal notranslate"><span class="pre">len(job.content[&quot;output/generic/dft/kpoints_cartesian&quot;])</span></code>.</p></li>
+</ul>
 </section>
 </section>
 
@@ -648,7 +674,7 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">First steps through pyiron</p>
+        <p class="prev-next-title">Molecular Dynamics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -671,6 +697,7 @@ The job murn_encut_600_1_1 was saved and received the ID: 97
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
   </nav></div>
 

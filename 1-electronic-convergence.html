@@ -179,16 +179,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Electronic Convergence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="2-dft-energy-precision.html">Planewave Energy Cut-off and Kpoint Mesh</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3-ev-curve.html">Energy Volume Curve</a></li>
-<li class="toctree-l1"><a class="reference internal" href="4-molecular-dynamics.html">First steps through pyiron</a></li>
-<li class="toctree-l1"><a class="reference internal" href="5-brownian-motion.html">Introduction to pyiron for LAMMPS users</a></li>
-
-
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="6-diffusion.html">Exercise 1: Introduction to pyiron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4-molecular-dynamics.html">Molecular Dynamics</a></li>
 </ul>
 
     </div>
@@ -372,6 +363,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#job-management">Job Management</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
             </nav>
         </div>
@@ -385,7 +377,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="electronic-convergence">
 <h1>Electronic Convergence<a class="headerlink" href="#electronic-convergence" title="Link to this heading">#</a></h1>
-<p>In contrast to simulation with interatomic potentials which only consider the interaction of atoms, density functional theory (DFT) leverages the density of electrons to determine the forces between atoms and the energy of a simulation cell. Consequently, the careful threatment of the electronic convergence is essential for high precision DFT calculation. In the following the <a class="reference external" href="https://sxrepo.mpie.de">SPHInX</a> DFT code is used in combination with <a class="reference external" href="https://pyiron.org">pyiron.org</a> workflow framework to develop a practical understanding of DFT simulation.</p>
+<p>In contrast to simulation with interatomic potentials which only consider the interaction of atoms, density functional theory (DFT) leverages the density of electrons to determine the forces between atoms and the energy of a simulation cell. Consequently, the careful threatment of the electronic convergence is essential for high precision DFT calculation. In the following the <a class="reference external" href="https://sxrepo.mpie.de">SPHInX</a> DFT simulation code is used in combination with the <a class="reference external" href="https://pyiron.org">pyiron.org</a> workflow framework to develop a practical understanding of DFT simulation.</p>
 <p>Both codes are available as open-source software for the Linux operation system and can be installed from the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package manager using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">pyiron_atomistics</span> <span class="n">sphinxdft</span> <span class="n">sphinxdft</span><span class="o">-</span><span class="n">data</span> <span class="n">pyiron</span><span class="o">-</span><span class="n">data</span> <span class="n">nglview</span>
 </pre></div>
@@ -401,25 +393,29 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "98ec78f18593499e944e7d67767085e1"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "1df0886f8b2e476fbf658958f24a742a"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/srv/conda/envs/notebook/lib/python3.12/site-packages/nglview/__init__.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
+  import pkg_resources
+</pre></div>
+</div>
+</div>
 </div>
 <section id="calculation">
 <h2>Calculation<a class="headerlink" href="#calculation" title="Link to this heading">#</a></h2>
 <p>As a first step the <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> folder is created using the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object. To have a clean start all calculations in this folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function. This is typically not necessary, but it is a helpful command to restart fresh.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;sphinx&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;electronic_convergence&quot;</span><span class="p">)</span>
 <span class="n">pr</span><span class="o">.</span><span class="n">remove_jobs</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "6b483fe9dd0946cd91cec6c18c9281d9"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b719f186bd684b71928f18252c6938f9"}</script></div>
 </div>
 <p>In the second step, the primitive atomistic structure for Aluminium (Al) is created. In pyiron this is achieved using the <code class="docutils literal notranslate"><span class="pre">create.structure.ase.bulk()</span></code> function of the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object. To help with interactive development, python provides <code class="docutils literal notranslate"><span class="pre">tab</span></code> completion, so by typing <code class="docutils literal notranslate"><span class="pre">pr.create.</span></code> and pressing <code class="docutils literal notranslate"><span class="pre">tab</span></code> you get a list of available objects which can be created from the <code class="docutils literal notranslate"><span class="pre">Project</span></code>. The advantage of creating these objects from the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is that the path of the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is then automatically used for data storage, so the <code class="docutils literal notranslate"><span class="pre">structure</span></code> object directly knows it should write any data to the <code class="docutils literal notranslate"><span class="pre">path</span></code> of the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object. You can print the path of the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object using <code class="docutils literal notranslate"><span class="pre">pr.path</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">structure_Al</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">ase</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">structure_Al</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">ase</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -437,7 +433,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "0234615ff1d24d318ae7c1d0c42f2df8"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "ca2a472326e946529d3ec01a7b1c2027"}</script></div>
 </div>
 <p>After the creation of the <code class="docutils literal notranslate"><span class="pre">structure</span></code> object, the SPHInX <code class="docutils literal notranslate"><span class="pre">job</span></code> object can be created using the same <code class="docutils literal notranslate"><span class="pre">create()</span></code> function of the project object. After the creation of the <code class="docutils literal notranslate"><span class="pre">job</span></code> object, the <code class="docutils literal notranslate"><span class="pre">structure</span></code> object is assigned. Followed by the specification of the k-point mesh using the <code class="docutils literal notranslate"><span class="pre">set_kpoints()</span></code> function, the energy cutoff using the <code class="docutils literal notranslate"><span class="pre">set_encut()</span></code> function and the electronic convergence criteria using the <code class="docutils literal notranslate"><span class="pre">set_convergence_precision()</span></code> function. Finally, the computational resources can be assigned. In this case only a single computational core is selected, but typically such a calculation would be submitted to a high performance computing (HPC) cluster. Up to this point no data was written to the file system. Only when the <code class="docutils literal notranslate"><span class="pre">run()</span></code> function of the <code class="docutils literal notranslate"><span class="pre">job</span></code> object is executed <code class="docutils literal notranslate"><span class="pre">pyiron</span></code> writes the input files for the <code class="docutils literal notranslate"><span class="pre">SPHInX</span></code> DFT simulation code, calls the simulation code and parses the output of the calculation.</p>
 <div class="cell docutils container">
@@ -473,13 +469,13 @@ document.write(`
 <p>In addition to the separation of technical and scientific configuration, it is typically also helpful to separate the setup of the calculation and the analysis. Especially in cases when the individual calculation take multiple days or even weeks. In this example the cells below can be executed independent of the calculation section. As a first step the previous calculation named <code class="docutils literal notranslate"><span class="pre">&quot;spx&quot;</span></code> is reloaded using the <code class="docutils literal notranslate"><span class="pre">load()</span></code> function of the <code class="docutils literal notranslate"><span class="pre">Project</span></code> object and the electronic energy is aggegated in the <code class="docutils literal notranslate"><span class="pre">eng_lst</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;sphinx&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;electronic_convergence&quot;</span><span class="p">)</span>
 <span class="n">eng_lst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;spx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">generic</span><span class="o">.</span><span class="n">dft</span><span class="o">.</span><span class="n">scf_energy_free</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/srv/conda/envs/notebook/lib/python3.11/site-packages/pyiron_base/interfaces/lockable.py:59: LockedWarning: __setitem__ called on &lt;class &#39;pyiron_atomistics.sphinx.input_writer.Group&#39;&gt;, but object is locked!
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/srv/conda/envs/notebook/lib/python3.12/site-packages/pyiron_base/interfaces/lockable.py:59: LockedWarning: __setitem__ called on &lt;class &#39;pyiron_atomistics.sphinx.input_writer.Group&#39;&gt;, but object is locked!
   warnings.warn(
 </pre></div>
 </div>
@@ -499,7 +495,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;Energy (eV)&#39;)
 </pre></div>
 </div>
-<img alt="_images/f8fdcd80181e02b854146d7d5d59ea198505eba2131698b8b93ca693e3422859.png" src="_images/f8fdcd80181e02b854146d7d5d59ea198505eba2131698b8b93ca693e3422859.png" />
+<img alt="_images/6c12ad1e4641708f5ffa6c134b5ed9bd1f65a3d96d4893af9100e40b15afb699.png" src="_images/6c12ad1e4641708f5ffa6c134b5ed9bd1f65a3d96d4893af9100e40b15afb699.png" />
 </div>
 </div>
 <p>The calculation seems to be converged after the first electronic step with only minimal changes afterwards. But this impression is caused by the misleading representation of the data. If we subtract the full converged energy at the last electronic steps <code class="docutils literal notranslate"><span class="pre">eng_lst[-1]</span></code> from all other energies and take the absolute of this difference <code class="docutils literal notranslate"><span class="pre">np.abs()</span></code> then we can plot is on a semi-logarithmic scale. This highlights the logarithmic convergence of the electronic structure, nearly linear with the number of steps in the semi-logarithmic plot.</p>
@@ -513,7 +509,13 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/0d2e148b96f99bf94f14eca7733d672c62938e374053af5724dd4483bb8c40a2.png" src="_images/0d2e148b96f99bf94f14eca7733d672c62938e374053af5724dd4483bb8c40a2.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+&lt;&gt;:3: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+/tmp/ipykernel_672/2630766026.py:3: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+  plt.ylabel(&quot;$\Delta$ Energy (eV)&quot;)
+</pre></div>
+</div>
+<img alt="_images/7a8fc9f1b4ea56b1625cf95f3596499adaeb800e9eaa80923edb4a028577202f.png" src="_images/7a8fc9f1b4ea56b1625cf95f3596499adaeb800e9eaa80923edb4a028577202f.png" />
 </div>
 </div>
 <p>This example demonstrates that determening if a calculation is converged or not always depends on the convergence goal. A convergence of <span class="math notranslate nohighlight">\(10^{-3}\)</span> is already achived at the second electronic step while a convergence of <span class="math notranslate nohighlight">\(10^{-7}\)</span> in this case requires three electronic steps and so on.</p>
@@ -572,11 +574,11 @@ document.write(`
       <td>spx</td>
       <td>/spx</td>
       <td>None</td>
-      <td>/home/jovyan/dft/sphinx/</td>
-      <td>2024-09-03 16:04:14.729280</td>
-      <td>2024-09-03 16:04:16.997263</td>
-      <td>2.0</td>
-      <td>pyiron@jupyter-pyiron-2dsusmet-5fthermodynamics-2dxhwp6iwl#1</td>
+      <td>/home/jovyan/electronic_convergence/</td>
+      <td>2025-11-22 19:01:50.475782</td>
+      <td>2025-11-22 19:01:52.310354</td>
+      <td>1.0</td>
+      <td>pyiron@jupyter-jan-janssen-birmingham-c0uh7r7t#1</td>
       <td>Sphinx</td>
       <td>3.1</td>
       <td>None</td>
@@ -590,6 +592,13 @@ document.write(`
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
 <p>While for bulk structures electronic convergence is quickly achieved, for more complex chemical structures, surfaces or defects electronic convergence can be much more challenging. So it is important to carefully check the electronic convergence for every calculation.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Test different chemical elements to check how the convergence is changing. You can write a for loop to iterate over the nobel metals like gold, silver and platinum. The important part is to update the <code class="docutils literal notranslate"><span class="pre">job_name</span></code> for each of the different simulation.</p></li>
+<li><p>Change the lattice constant in the <code class="docutils literal notranslate"><span class="pre">pr.create.structure.ase.bulk(&quot;Al&quot;)</span></code> function by adding a lattice constant parameter <code class="docutils literal notranslate"><span class="pre">a=3.0</span></code>. How does the change of the lattice constand effect the electronic convergence?</p></li>
+</ul>
 </section>
 </section>
 
@@ -661,6 +670,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#job-management">Job Management</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
   </nav></div>
 
