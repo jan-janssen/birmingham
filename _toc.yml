@@ -5,5 +5,4 @@ chapters:
 - file: 2-dft-energy-precision.ipynb
 - file: 3-ev-curve.ipynb
 - file: 4-molecular-dynamics.ipynb
-- file: 5-brownian-motion.ipynb
-- file: 6-diffusion.ipynb
+- file: 5-diffusion.ipynb
