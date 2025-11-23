@@ -357,29 +357,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-an-al-supercell-with-interstitial-h">Creating an Al supercell with interstitial H</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-al-sublattice">Create Al sublattice</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-h-interstitial-sublattice">Create H interstitial sublattice</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-2x2x4-supercell-for-both-lattices">Create a 2x2x4 supercell for both lattices</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#occupy-the-h-sublattice-randomly-with-10-h-atoms">Occupy the H sublattice randomly with 10 H atoms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combine-al-and-h-sublattice-in-same-supercell">Combine Al and H sublattice in same supercell</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-md-simulation-of-the-alh-supercell-using-lammps">Perform a MD simulation of the AlH supercell using LAMMPS</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-the-lammps-calculation">Setup the Lammps calculation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#animate-md-trajectories">Animate MD trajectories</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analyze-trajectories-in-more-detail">Analyze trajectories in more detail</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-trajectories-in-grey-h-ones-in-red">Plot Al trajectories in grey, H ones in red</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-al-and-h-h-pair-correlation-function-of-the-last-md-structure">Plot Al-Al and H-H pair correlation function of the last MD structure</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-al-and-h-h-pair-correlation-function-after-structure-and-cell-relaxation">Plot Al-Al and H-H pair correlation function after structure and cell relaxation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-al-al-pair-correlation-before-and-after-relaxation">Compare Al-Al pair correlation before and after relaxation</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structure-with-hydrogen-interstitials">Structure with Hydrogen Interstitials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#molecular-dynamics">Molecular Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
             </nav>
         </div>
@@ -404,8 +386,14 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0ebf7280c6284878a86849a38afaca25", "version_major": 2, "version_minor": 0}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/janssen/mambaforge/lib/python3.12/site-packages/nglview/__init__.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
+  import pkg_resources
+</pre></div>
 </div>
-<p>A new <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is created named <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_md</span></code> to separate the calculation from the current tutorial and the previous. Any remaining calculation in the <code class="docutils literal notranslate"><span class="pre">energy_volume_curve_md</span></code> folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function, to provide a fresh start for every execution of the notebook.</p>
+</div>
+</div>
+<p>A new <code class="docutils literal notranslate"><span class="pre">Project</span></code> object is created named <code class="docutils literal notranslate"><span class="pre">diffusion</span></code> to separate the calculation from the current tutorial and the previous. Any remaining calculation in the <code class="docutils literal notranslate"><span class="pre">diffusion</span></code> folder are removed using the <code class="docutils literal notranslate"><span class="pre">remove_jobs()</span></code> function, to provide a fresh start for every execution of the notebook.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pr</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="s2">&quot;diffusion&quot;</span><span class="p">)</span>
@@ -413,22 +401,20 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e92ad503e5fc44f5adc6d96aae73833e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<section id="creating-an-al-supercell-with-interstitial-h">
-<h2>Creating an Al supercell with interstitial H<a class="headerlink" href="#creating-an-al-supercell-with-interstitial-h" title="Link to this heading">#</a></h2>
-<section id="create-al-sublattice">
-<h3>Create Al sublattice<a class="headerlink" href="#create-al-sublattice" title="Link to this heading">#</a></h3>
+<section id="structure-with-hydrogen-interstitials">
+<h2>Structure with Hydrogen Interstitials<a class="headerlink" href="#structure-with-hydrogen-interstitials" title="Link to this heading">#</a></h2>
+<p>As a first step a cubic Aluminium bulk structure is created using the <code class="docutils literal notranslate"><span class="pre">pr.create.structure.ase.bulk()</span></code> function of the project object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Al_struct</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create_ase_bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="n">cubic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Al_struct</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">ase</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="n">cubic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-<section id="create-h-interstitial-sublattice">
-<h3>Create H interstitial sublattice<a class="headerlink" href="#create-h-interstitial-sublattice" title="Link to this heading">#</a></h3>
-<p>Translate the H position by half the unit cell vectors.</p>
+<p>As a second step we create an identical copy of the Aluminium structure, by copying it. We then replace the Aluminium atoms in the structure with Hydrogen. Finally, as a third step we shift the positions of the Hydrogen atoms by half a lattice constant.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">H_int</span> <span class="o">=</span> <span class="n">Al_struct</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -438,9 +424,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="create-a-2x2x4-supercell-for-both-lattices">
-<h3>Create a 2x2x4 supercell for both lattices<a class="headerlink" href="#create-a-2x2x4-supercell-for-both-lattices" title="Link to this heading">#</a></h3>
+<p>We then repeat both structures, twice in x and y direction and four times in the z direction this gives us an elongated sample. We are going to measure the diffusion along this elongated direction.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Al_struct</span><span class="o">.</span><span class="n">set_repeat</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
@@ -448,10 +432,16 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/9p/rztyv06d0xv4h26cyv8nrw3m0000gq/T/ipykernel_5976/3410837431.py:1: DeprecationWarning: pyiron_atomistics.atomistics.structure.atoms.set_repeat is deprecated: Use Atoms.repeat.
+  Al_struct.set_repeat([2, 2, 4])
+/var/folders/9p/rztyv06d0xv4h26cyv8nrw3m0000gq/T/ipykernel_5976/3410837431.py:2: DeprecationWarning: pyiron_atomistics.atomistics.structure.atoms.set_repeat is deprecated: Use Atoms.repeat.
+  H_int.set_repeat([2, 2, 4])
+</pre></div>
 </div>
-</section>
-<section id="occupy-the-h-sublattice-randomly-with-10-h-atoms">
-<h3>Occupy the H sublattice randomly with 10 H atoms<a class="headerlink" href="#occupy-the-h-sublattice-randomly-with-10-h-atoms" title="Link to this heading">#</a></h3>
+</div>
+</div>
+<p>To reach a realistic hydrogen concentration, we select ten of the Hydrogen atoms from the Hydrogen structure using the <code class="docutils literal notranslate"><span class="pre">np.random.shuffle()</span></code> function from the <a class="reference external" href="http://numpy.org">numpy</a> package.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rand_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">H_int</span><span class="p">))</span>
@@ -461,9 +451,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="combine-al-and-h-sublattice-in-same-supercell">
-<h3>Combine Al and H sublattice in same supercell<a class="headerlink" href="#combine-al-and-h-sublattice-in-same-supercell" title="Link to this heading">#</a></h3>
+<p>Finally, both structures are combined by just adding them together. This is part of the pyiron design principles, using Python standard commands extended for the application on atomistic structures and simulation codes. The resulting structure is then visualized using <code class="docutils literal notranslate"><span class="pre">NGLview</span></code>, by increasing the <code class="docutils literal notranslate"><span class="pre">particle_size</span></code> to <code class="docutils literal notranslate"><span class="pre">3</span></code> the crystal structure becomes more visible:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">AlH_struct</span> <span class="o">=</span> <span class="n">Al_struct</span> <span class="o">+</span> <span class="n">H_int</span>
@@ -471,44 +459,56 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b90b3ed37ca44921ab16f214f89e7364", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-</section>
-<section id="perform-a-md-simulation-of-the-alh-supercell-using-lammps">
-<h2>Perform a MD simulation of the AlH supercell using LAMMPS<a class="headerlink" href="#perform-a-md-simulation-of-the-alh-supercell-using-lammps" title="Link to this heading">#</a></h2>
-<section id="setup-the-lammps-calculation">
-<h3>Setup the Lammps calculation<a class="headerlink" href="#setup-the-lammps-calculation" title="Link to this heading">#</a></h3>
+<section id="molecular-dynamics">
+<h2>Molecular Dynamics<a class="headerlink" href="#molecular-dynamics" title="Link to this heading">#</a></h2>
+<p>As the next step a molecular dynamics trajectory is calculated using the using the <code class="docutils literal notranslate"><span class="pre">calc_md()</span></code> function to study the diffusion of the Hydrogen inside the Aluminium bulk sample. Again this is only possible with an interatomic potential which supports both Aluminium and Hydrogen at the same time. Here we again use the <code class="docutils literal notranslate"><span class="pre">1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1</span></code> interatomic potential, which was already used in the previous example:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_lammps</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">job_type</span><span class="o">=</span><span class="n">pr</span><span class="o">.</span><span class="n">job_type</span><span class="o">.</span><span class="n">Lammps</span><span class="p">,</span> <span class="n">job_name</span><span class="o">=</span> <span class="s2">&quot;AlH_lammps&quot;</span><span class="p">)</span>
 <span class="n">job_lammps</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">AlH_struct</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">job_lammps</span><span class="o">.</span><span class="n">list_potentials</span><span class="p">())</span>
 <span class="n">job_lammps</span><span class="o">.</span><span class="n">potential</span> <span class="o">=</span> <span class="s1">&#39;1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1&#39;</span>
-<span class="n">job_lammps</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">job_lammps</span><span class="o">.</span><span class="n">calc_md</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">n_ionic_steps</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;1995--Angelo-J-E--Ni-Al-H--LAMMPS--ipr1&#39;, &#39;2011--Ko-W-S--Al-H--LAMMPS--ipr1&#39;, &#39;2013--Shim-J-H--V-Al-H--LAMMPS--ipr1&#39;, &#39;2018--Zhou-X-W--Al-Cu-H--LAMMPS--ipr1&#39;, &#39;EAM_Dynamo_AngeloMoodyBaskes_1995_NiAlH__MO_418978237058_005&#39;, &#39;MEAM_LAMMPS_KoShimLee_2011_AlH__MO_127847080751_000&#39;, &#39;MEAM_LAMMPS_ShimKoKim_2013_AlVH__MO_344724145339_000&#39;]
 </pre></div>
 </div>
 </div>
 </div>
+<p>The calculation is again only started by calling the <code class="docutils literal notranslate"><span class="pre">run()</span></code> function.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_lammps</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-</div>
-</section>
-<section id="animate-md-trajectories">
-<h3>Animate MD trajectories<a class="headerlink" href="#animate-md-trajectories" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_lammps</span><span class="o">.</span><span class="n">animate_structure</span><span class="p">(</span><span class="n">particle_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The job AlH_lammps was saved and received the ID: 206
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="analyze-trajectories-in-more-detail">
-<h3>Analyze trajectories in more detail<a class="headerlink" href="#analyze-trajectories-in-more-detail" title="Link to this heading">#</a></h3>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
+<p>The calculated trajectory can then again be visualized using the <code class="docutils literal notranslate"><span class="pre">animate_structures()</span></code> function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">job_lammps</span><span class="o">.</span><span class="n">animate_structures</span><span class="p">(</span><span class="n">particle_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "071eb79bf072461a93516418f8bf9936", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>To study the diffusion of Hydrogen in Aluminium more systematicallty we visualize the trajectory of the hydrogen atoms, by selectiing them using the <code class="docutils literal notranslate"><span class="pre">select_index()</span></code> function of the atomic structure:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">H_indices</span> <span class="o">=</span> <span class="n">AlH_struct</span><span class="o">.</span><span class="n">select_index</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span>
@@ -517,9 +517,13 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([64, 65, 66, 67, 68, 69, 70, 71, 72, 73])
+</pre></div>
 </div>
-<section id="plot-al-trajectories-in-grey-h-ones-in-red">
-<h4>Plot Al trajectories in grey, H ones in red<a class="headerlink" href="#plot-al-trajectories-in-grey-h-ones-in-red" title="Link to this heading">#</a></h4>
+</div>
+</div>
+<p>Plot the trajectories, to see when one Hydrogen atom transitions from one lattice position to another. Basically in this 2D projection every lattice plane is represented as one line and the diffusion is marked by a transition from one plane to the next.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">job_lammps</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">unwrapped_positions</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
@@ -529,66 +533,28 @@ document.write(`
 </pre></div>
 </div>
 </div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md_struct</span> <span class="o">=</span> <span class="n">job_lammps</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="n">iteration_step</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">md_struct</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="n">particle_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;&gt;:4: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+&lt;&gt;:4: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+/var/folders/9p/rztyv06d0xv4h26cyv8nrw3m0000gq/T/ipykernel_5976/2108129618.py:4: SyntaxWarning: invalid escape sequence &#39;\A&#39;
+  plt.ylabel(&quot;positions [$\AA$]&quot;);
 </pre></div>
 </div>
+<img alt="_images/35de11ab9312963046f3e2448213b229302302cbd13e035e4f5d8749173f5abf.png" src="_images/35de11ab9312963046f3e2448213b229302302cbd13e035e4f5d8749173f5abf.png" />
 </div>
 </div>
 </section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>While the previous examples demonstrated the calculation of bulk properties, this example demonstrates the calculation of kinetic properties and more specifically defects in materials.</p>
 </section>
-</section>
-<section id="analysis">
-<h2>Analysis<a class="headerlink" href="#analysis" title="Link to this heading">#</a></h2>
-<section id="plot-al-al-and-h-h-pair-correlation-function-of-the-last-md-structure">
-<h3>Plot Al-Al and H-H pair correlation function of the last MD structure<a class="headerlink" href="#plot-al-al-and-h-h-pair-correlation-function-of-the-last-md-structure" title="Link to this heading">#</a></h3>
-<p>This is done using the <code class="docutils literal notranslate"><span class="pre">get_neighbors()</span></code> function</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neighbors_md</span> <span class="o">=</span> <span class="n">md_struct</span><span class="p">[</span><span class="n">Al_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_md</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Al-Al&quot;</span><span class="p">)</span>
-<span class="n">neighbors_md</span> <span class="o">=</span> <span class="n">md_struct</span><span class="p">[</span><span class="n">H_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_md</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;H-H&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;distance [A]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="plot-al-al-and-h-h-pair-correlation-function-after-structure-and-cell-relaxation">
-<h3>Plot Al-Al and H-H pair correlation function after structure and cell relaxation<a class="headerlink" href="#plot-al-al-and-h-h-pair-correlation-function-after-structure-and-cell-relaxation" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">min_struct</span> <span class="o">=</span> <span class="n">job_lammps_minimize</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">neighbors_min</span> <span class="o">=</span> <span class="n">min_struct</span><span class="p">[</span><span class="n">Al_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_min</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Al-Al&quot;</span><span class="p">)</span>
-<span class="n">neighbors_min</span> <span class="o">=</span> <span class="n">min_struct</span><span class="p">[</span><span class="n">H_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_min</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;H-H&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;distance [A]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="compare-al-al-pair-correlation-before-and-after-relaxation">
-<h3>Compare Al-Al pair correlation before and after relaxation<a class="headerlink" href="#compare-al-al-pair-correlation-before-and-after-relaxation" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neighbors_min</span> <span class="o">=</span> <span class="n">min_struct</span><span class="p">[</span><span class="n">Al_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_min</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Al-Al min&quot;</span><span class="p">)</span>
-<span class="n">neighbors_md</span> <span class="o">=</span> <span class="n">md_struct</span><span class="p">[</span><span class="n">Al_indices</span><span class="p">]</span><span class="o">.</span><span class="n">get_neighbors</span><span class="p">(</span><span class="n">num_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">neighbors_md</span><span class="o">.</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Al-Al md&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
-</pre></div>
-</div>
-</div>
-</div>
-</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Calculate the diffusion in Nickel and compare it to the diffusion in Aluminium.</p></li>
+<li><p>How does the diffusion change with increasing with increasing temperature?</p></li>
+<li><p>How do other defects interact with the diffusion of Hydrogen? For example what is the effect of adding a vacancy? You can add a vacancy, by removing an atom using <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">structure[-1]</span></code>.</p></li>
+</ul>
 </section>
 </section>
 
@@ -638,29 +604,11 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-an-al-supercell-with-interstitial-h">Creating an Al supercell with interstitial H</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-al-sublattice">Create Al sublattice</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-h-interstitial-sublattice">Create H interstitial sublattice</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-2x2x4-supercell-for-both-lattices">Create a 2x2x4 supercell for both lattices</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#occupy-the-h-sublattice-randomly-with-10-h-atoms">Occupy the H sublattice randomly with 10 H atoms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combine-al-and-h-sublattice-in-same-supercell">Combine Al and H sublattice in same supercell</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-a-md-simulation-of-the-alh-supercell-using-lammps">Perform a MD simulation of the AlH supercell using LAMMPS</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-the-lammps-calculation">Setup the Lammps calculation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#animate-md-trajectories">Animate MD trajectories</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analyze-trajectories-in-more-detail">Analyze trajectories in more detail</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-trajectories-in-grey-h-ones-in-red">Plot Al trajectories in grey, H ones in red</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-al-and-h-h-pair-correlation-function-of-the-last-md-structure">Plot Al-Al and H-H pair correlation function of the last MD structure</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-al-al-and-h-h-pair-correlation-function-after-structure-and-cell-relaxation">Plot Al-Al and H-H pair correlation function after structure and cell relaxation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-al-al-pair-correlation-before-and-after-relaxation">Compare Al-Al pair correlation before and after relaxation</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structure-with-hydrogen-interstitials">Structure with Hydrogen Interstitials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#molecular-dynamics">Molecular Dynamics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises</a></li>
 </ul>
   </nav></div>
 
