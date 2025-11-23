@@ -27,5 +27,4 @@ jobs:
         papermill 2-dft-energy-precision.ipynb 2-dft-energy-precision-out.ipynb -k "python3"
         papermill 3-ev-curve.ipynb 3-ev-curve-out.ipynb -k "python3"
         papermill 4-molecular-dynamics.ipynb 4-molecular-dynamics-out.ipynb -k "python3"
-        papermill 5-brownian-motion.ipynb 5-brownian-motion-out.ipynb -k "python3"
-        papermill 6-diffusion.ipynb 6-diffusion-out.ipynb -k "python3"
+        papermill 5-diffusion.ipynb 5-diffusion-out.ipynb -k "python3"
