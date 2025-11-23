@@ -1,4 +1,6 @@
 # Birmingham Lecture
+[![Tests](https://github.com/jan-janssen/birmingham/actions/workflows/test.yml/badge.svg)](https://github.com/jan-janssen/birmingham/actions/workflows/test.yml)
+
 This is the supplementary information for the Birmingham lecture.
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jan-janssen/birmingham/HEAD)
 
